@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Emacity MUN • FIA Control</title>
+<meta charset="UTF-8">
+<title>Emacity MUN • FIA Committee</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
 <style>
@@ -13,79 +14,47 @@ body{
     overflow:hidden;
 }
 
-/* ================= FIA ID GATE ================= */
+/* ================= FIA ID SCREEN ================= */
+
 #loginScreen{
-    position:fixed;
-    inset:0;
-    background:black;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:9999;
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
 }
+
 #loginScreen h2{
-    position:absolute;
-    top:20px;
-    left:30px;
-    color:#e10600;
-    letter-spacing:3px;
+  position:absolute;
+  top:20px;
+  left:30px;
+  color:#e10600;
+  letter-spacing:3px;
 }
+
 #loginScreen input{
-    padding:15px;
-    font-size:20px;
-    text-align:center;
-    margin-top:20px;
+  padding:15px;
+  font-size:20px;
+  text-align:center;
+  border:none;
+  margin-top:20px;
 }
+
 #loginScreen button{
-    margin-top:20px;
-    padding:15px 40px;
-    font-size:20px;
-    background:#e10600;
-    border:none;
-    color:white;
-    cursor:pointer;
+  margin-top:20px;
+  padding:15px 40px;
+  font-size:20px;
+  background:#e10600;
+  color:white;
+  border:none;
+  cursor:pointer;
 }
 
-/* ================= ORIGINAL DESIGN ================= */
-
-.overlay{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.82);
-}
-
-body::after{
-    content:"";
-    position:fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background-image:
-      linear-gradient(rgba(255,0,0,0.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,0,0,0.08) 1px, transparent 1px);
-    background-size:60px 60px;
-    pointer-events:none;
-}
-
-#broadcastTag{
-    position:absolute;
-    top:20px;
-    left:30px;
-    background:rgba(0,0,0,0.75);
-    border-left:6px solid red;
-    padding:12px 18px;
-    font-size:18px;
-    letter-spacing:2px;
-    box-shadow:0 0 20px red;
-}
-
-#clock{
-    position:absolute;
-    top:20px;
-    right:40px;
-    font-size:22px;
-}
+/* ================= MAIN PAGE ================= */
 
 #startBtn{
     position:absolute;
@@ -137,46 +106,41 @@ body::after{
     text-align:center;
     font-size:38px;
     display:none;
-    background:rgba(0,0,0,0.65);
+    background:rgba(0,0,0,0.7);
     border:2px solid red;
     box-shadow:0 0 40px red;
-    border-radius:12px;
 }
 
-#ticker{
+/* typing */
+#name, #port{
+  color:#e10600;
+}
+
+/* ================= CLOCK ================= */
+
+#clock{
     position:absolute;
-    bottom:0;
-    width:100%;
-    background:black;
-    color:red;
-    font-size:20px;
-    padding:12px;
-    white-space:nowrap;
-    overflow:hidden;
+    top:20px;
+    right:40px;
+    font-size:22px;
 }
-#ticker span{
-    display:inline-block;
-    padding-left:100%;
-    animation:scroll 20s linear infinite;
-}
-@keyframes scroll{to{transform:translateX(-100%);}}
 </style>
 </head>
 
 <body>
 
-<!-- FIA ID GATE -->
+<!-- ================= FIA LOGIN ================= -->
 <div id="loginScreen">
-    <h2>Emacity Model United Nations • FIA Committee</h2>
-    <h1>ENTER FIA ID</h1>
-    <input id="fiaid" placeholder="FIA-001">
-    <button onclick="enterSite()">ENTER</button>
+  <h2>Emacity Model United Nations • FIA Committee</h2>
+  <h1>ENTER FIA ID</h1>
+  <input id="fiaid" placeholder="FIA-001">
+  <button onclick="enterSite()">ENTER</button>
 </div>
 
-<!-- ORIGINAL PAGE -->
-<div class="overlay"></div>
+<audio id="beep" src="f1sound.mp3"></audio>
 
-<div id="broadcastTag">EMACITY MODEL UNITED NATIONS • FIA COMMITTEE</div>
+<!-- ================= MAIN CONTENT ================= -->
+
 <div id="clock"></div>
 
 <button id="startBtn" onclick="startShow()">INITIATE FIA ALLOTMENT</button>
@@ -190,45 +154,67 @@ body::after{
     <div class="light" id="l4"></div>
 </div>
 
-<div id="result"></div>
-
-<div id="ticker">
-<span>FIA News • DRS debate • Rain probability 60% • Track limits warning • Safety car protocol revision</span>
+<div id="result">
+  <p>Delegate: <strong id="name"></strong></p>
+  <p>Portfolio: <strong id="port"></strong></p>
 </div>
 
-<audio id="startSound" src="f1sound.mp3"></audio>
 <audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
 
 <script>
-/* ================= FIA ID LOGIC ================= */
-const validIDs = ["FIA-001","FIA-002","FIA-003"];
+/* ================= DELEGATE DATABASE ================= */
+
+const delegates = {
+  "FIA-001": {
+    name: "Vallarry Kshipra Mangesh Deshmukh",
+    portfolio: "George Russell"
+  },
+  "FIA-002": {
+    name: "Anomitra Das",
+    portfolio: "Lewis Hamilton"
+  }
+};
+
+/* ================= LOGIN ================= */
+
+let currentDelegate = null;
 
 function enterSite(){
-    let id = document.getElementById("fiaid").value.trim();
-    if(validIDs.includes(id)){
-        document.getElementById("loginScreen").remove();
-    } else {
-        alert("Invalid FIA ID");
-    }
+  let id = document.getElementById("fiaid").value.trim();
+
+  if(delegates[id]){
+    currentDelegate = delegates[id];
+    document.getElementById("beep").play();
+    document.getElementById("loginScreen").remove();
+  } else {
+    alert("Invalid FIA ID");
+  }
 }
 
-/* ================= ORIGINAL SHOW ================= */
-const nameText = "NAME HERE";
-const portfolioText = "PORTFOLIO HERE";
+/* ================= CLOCK ================= */
+
+function updateClock(){
+  document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();
+}
+setInterval(updateClock,1000);
+
+/* ================= SHOW SEQUENCE ================= */
 
 function typeWriter(element, text, speed){
     let i = 0;
     const typing = setInterval(()=>{
         if(i < text.length){
             element.innerHTML += text.charAt(i);
+            document.getElementById("typeSound").currentTime = 0;
             document.getElementById("typeSound").play();
             i++;
-        } else clearInterval(typing);
+        } else {
+            clearInterval(typing);
+        }
     }, speed);
 }
 
 function startShow(){
-    document.getElementById("startSound").play();
     document.getElementById("startBtn").style.display="none";
     document.getElementById("ready").style.display="block";
 
@@ -242,6 +228,7 @@ function startShow(){
         let interval=setInterval(()=>{
             let el=document.getElementById(lights[i]);
             el.style.background="red";
+            el.style.boxShadow="0 0 40px red";
             i++;
             if(i==4){
                 clearInterval(interval);
@@ -258,18 +245,12 @@ function startShow(){
 function showResult(){
     const res = document.getElementById("result");
     res.style.display="block";
-    res.innerHTML = "<p>Delegate: <strong id='name'></strong></p><p>Portfolio: <strong id='port'></strong></p>";
 
-    typeWriter(document.getElementById("name"), nameText, 80);
+    typeWriter(document.getElementById("name"), currentDelegate.name, 80);
     setTimeout(()=>{
-        typeWriter(document.getElementById("port"), portfolioText, 80);
+        typeWriter(document.getElementById("port"), currentDelegate.portfolio, 80);
     },1500);
 }
-
-function updateClock(){
-    document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();
-}
-setInterval(updateClock,1000);
 </script>
 
 </body>
