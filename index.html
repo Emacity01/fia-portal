@@ -14,8 +14,7 @@ body{
     overflow:hidden;
 }
 
-/* ================= FIA ID SCREEN ================= */
-
+/* LOGIN SCREEN */
 #loginScreen{
   position:fixed;
   width:100%;
@@ -54,8 +53,7 @@ body{
   cursor:pointer;
 }
 
-/* ================= MAIN PAGE ================= */
-
+/* MAIN */
 #startBtn{
     position:absolute;
     top:45%;
@@ -111,12 +109,7 @@ body{
     box-shadow:0 0 40px red;
 }
 
-/* typing */
-#name, #port{
-  color:#e10600;
-}
-
-/* ================= CLOCK ================= */
+#name,#port{ color:#e10600; }
 
 #clock{
     position:absolute;
@@ -129,7 +122,7 @@ body{
 
 <body>
 
-<!-- ================= FIA LOGIN ================= -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <h2>Emacity Model United Nations • FIA Committee</h2>
   <h1>ENTER FIA ID</h1>
@@ -138,9 +131,9 @@ body{
 </div>
 
 <audio id="beep" src="f1sound.mp3"></audio>
+<audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
 
-<!-- ================= MAIN CONTENT ================= -->
-
+<!-- MAIN CONTENT -->
 <div id="clock"></div>
 
 <button id="startBtn" onclick="startShow()">INITIATE FIA ALLOTMENT</button>
@@ -159,11 +152,8 @@ body{
   <p>Portfolio: <strong id="port"></strong></p>
 </div>
 
-<audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
-
 <script>
-/* ================= DELEGATE DATABASE ================= */
-
+/* ===== DELEGATES DATABASE (EDIT ONLY THIS LATER) ===== */
 const delegates = {
   "FIA-001": {
     name: "Vallarry Kshipra Mangesh Deshmukh",
@@ -175,10 +165,9 @@ const delegates = {
   }
 };
 
-/* ================= LOGIN ================= */
-
 let currentDelegate = null;
 
+/* LOGIN */
 function enterSite(){
   let id = document.getElementById("fiaid").value.trim();
 
@@ -191,17 +180,16 @@ function enterSite(){
   }
 }
 
-/* ================= CLOCK ================= */
-
+/* CLOCK */
 function updateClock(){
   document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();
 }
 setInterval(updateClock,1000);
 
-/* ================= SHOW SEQUENCE ================= */
-
+/* TYPING */
 function typeWriter(element, text, speed){
     let i = 0;
+    element.innerHTML="";
     const typing = setInterval(()=>{
         if(i < text.length){
             element.innerHTML += text.charAt(i);
@@ -214,6 +202,7 @@ function typeWriter(element, text, speed){
     }, speed);
 }
 
+/* SHOW SEQUENCE */
 function startShow(){
     document.getElementById("startBtn").style.display="none";
     document.getElementById("ready").style.display="block";
@@ -243,8 +232,7 @@ function startShow(){
 }
 
 function showResult(){
-    const res = document.getElementById("result");
-    res.style.display="block";
+    document.getElementById("result").style.display="block";
 
     typeWriter(document.getElementById("name"), currentDelegate.name, 80);
     setTimeout(()=>{
