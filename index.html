@@ -75,7 +75,10 @@ body::after{
     padding:12px 18px;
     font-size:18px;
     letter-spacing:2px;
+    font-weight:bold;
+    color:white;
     box-shadow:0 0 20px red;
+    z-index:1000;
 }
 
 /* Clock */
@@ -84,9 +87,10 @@ body::after{
     top:20px;
     right:40px;
     font-size:22px;
+    font-weight:bold;
 }
 
-/* Button */
+/* Start Button */
 #startBtn{
     position:absolute;
     top:45%;
@@ -144,6 +148,7 @@ body::after{
     box-shadow:0 0 40px red;
     backdrop-filter: blur(8px);
     border-radius:12px;
+    z-index:1100;
 }
 
 /* MUN Heading inside result */
@@ -169,19 +174,25 @@ body::after{
     position:absolute;
     bottom:0;
     width:100%;
-    background:black;
-    color:red;
+    background:rgba(0,0,0,0.85);
+    color:white;
     font-size:20px;
-    padding:12px;
+    padding:12px 0;
     white-space:nowrap;
     overflow:hidden;
+    border-top:2px solid red;
 }
 #ticker span{
     display:inline-block;
     padding-left:100%;
     animation:scroll 20s linear infinite;
 }
-@keyframes scroll{to{transform:translateX(-100%);}}
+@keyframes scroll{0%{transform:translateX(0%);}100%{transform:translateX(-100%);}}
+
+/* Optional red glow on hover for broadcast tag */
+#broadcastTag:hover{
+    box-shadow:0 0 40px red, 0 0 80px rgba(255,0,0,0.5);
+}
 </style>
 </head>
 
@@ -195,13 +206,15 @@ body::after{
     <button onclick="checkID()">Enter</button>
 </div>
 
+<!-- F1 style tag and clock -->
 <div id="broadcastTag">EMACITY MODEL UNITED NATIONS • FIA COMMITTEE</div>
 <div id="clock"></div>
 
+<!-- Start button -->
 <button id="startBtn" onclick="startShow()">INITIATE FIA ALLOTMENT</button>
 
+<!-- Ready text and lights -->
 <div id="ready">ARE YOU READY?</div>
-
 <div id="lights">
     <div class="light" id="l1"></div>
     <div class="light" id="l2"></div>
@@ -209,6 +222,7 @@ body::after{
     <div class="light" id="l4"></div>
 </div>
 
+<!-- Result panel -->
 <div id="result">
     <div class="munHeading">
         EMACITY MODEL UNITED NATIONS
@@ -218,10 +232,12 @@ body::after{
     <p>Portfolio: <strong id="port"></strong></p>
 </div>
 
+<!-- News ticker -->
 <div id="ticker">
 <span>FIA News • DRS debate • Rain probability 60% • Track limits warning • Safety car protocol revision</span>
 </div>
 
+<!-- Audio -->
 <audio id="startSound" src="f1sound.mp3"></audio>
 <audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
 
