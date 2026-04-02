@@ -162,11 +162,14 @@ body::after{
     text-align: center;
     text-shadow: 0 0 25px rgba(255,0,0,0.9);
 }
-.munHeading span{
+
+/* Delegate and portfolio typing effect */
+#delegateName, #delegatePort{
     display:block;
-    font-size:22px;
+    font-size:32px;
+    margin-top:20px;
     color:#ff4d4d;
-    letter-spacing:6px;
+    letter-spacing:2px;
 }
 
 /* News ticker */
@@ -207,7 +210,7 @@ body::after{
 </div>
 
 <!-- F1 style tag and clock -->
-<div id="broadcastTag">EMACITY MODEL UNITED NATIONS • FIA COMMITTEE</div>
+<div id="broadcastTag">EMACITY MODEL UNITED NATIONS</div>
 <div id="clock"></div>
 
 <!-- Start button -->
@@ -224,12 +227,9 @@ body::after{
 
 <!-- Result panel -->
 <div id="result">
-    <div class="munHeading">
-        EMACITY MODEL UNITED NATIONS
-        <span>FIA COMMITTEE</span>
-    </div>
-    <p>Delegate: <strong id="name"></strong></p>
-    <p>Portfolio: <strong id="port"></strong></p>
+    <div class="munHeading">EMACITY MODEL UNITED NATIONS</div>
+    <span id="delegateName"></span>
+    <span id="delegatePort"></span>
 </div>
 
 <!-- News ticker -->
@@ -257,8 +257,6 @@ function checkID(){
         currentDelegate = delegates[id];
         document.getElementById("gate").style.display="none";
         document.getElementById("startBtn").style.display="block";
-        document.getElementById("name").innerText = currentDelegate.name;
-        document.getElementById("port").innerText = currentDelegate.portfolio;
     } else alert("Invalid FIA ID");
 }
 
@@ -268,8 +266,8 @@ function updateClock(){
 }
 setInterval(updateClock,1000);
 
-// === Typing ===
-function typeWriter(element,text,speed){
+// === Typing effect ===
+function typeWriter(element, text, speed, callback){
     let i=0;
     element.innerHTML="";
     const typing = setInterval(()=>{
@@ -278,8 +276,11 @@ function typeWriter(element,text,speed){
             document.getElementById("typeSound").currentTime=0;
             document.getElementById("typeSound").play();
             i++;
-        } else clearInterval(typing);
-    },speed);
+        } else {
+            clearInterval(typing);
+            if(callback) callback();
+        }
+    }, speed);
 }
 
 // === Start Show ===
@@ -304,6 +305,12 @@ function startShow(){
                 setTimeout(()=>{ 
                     document.getElementById("lights").style.display="none";
                     document.getElementById("result").style.display="block";
+
+                    // Start typing delegate info
+                    typeWriter(document.getElementById("delegateName"), "Delegate: " + currentDelegate.name, 70, ()=>{
+                        typeWriter(document.getElementById("delegatePort"), "Portfolio: " + currentDelegate.portfolio, 70);
+                    });
+
                 },800);
             }
         },700);
