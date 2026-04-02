@@ -1,76 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>FIA Allotment Portal</title>
+<title>FIA Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:#000;color:white;font-family:Arial;overflow:hidden}
-#overlay{position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(255,0,0,.08),rgba(255,0,0,.08) 2px,transparent 2px,transparent 40px);pointer-events:none}
-#topbar{position:fixed;top:20px;left:30px;letter-spacing:2px;opacity:.8}
-#clock{position:fixed;top:20px;right:30px}
-#center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
-input{padding:12px;font-size:18px;width:260px;text-align:center}
-button{padding:12px 20px;font-size:18px;background:red;color:white;border:none;cursor:pointer;margin-top:10px}
-.light{display:inline-block;width:40px;height:40px;margin:10px;border-radius:50%;background:#330000}
-.on{background:red;box-shadow:0 0 20px red}
-#result{display:none;margin-top:30px}
-#name{font-size:42px;margin:10px 0}
-#portfolio{font-size:24px;opacity:.8}
+/* (your same CSS preserved) */
+body{
+    margin:0;
+    font-family:'Orbitron', sans-serif;
+    background:url('https://imgs.search.brave.com/um80_UHagsPGcFZTUsOcvkQVb3lccVveXoqJcJUEN28/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9kMm45/aDJ3aXRzMjNoZi5j/bG91ZGZyb250Lm5l/dC9pbWFnZS92MS9z/dGF0aWMvNjA1Nzk0/OTQzMjAwMS8xMWU3/NDdhNi01NTg2LTQ2/YTQtOGEyOS1jOTQw/ODhhZDkzYjgvNzZi/NGQ2Y2MtMjkxZS00/ZmJhLWFhNWYtYTVi/NGI2YjIwMWY2Lzg2/NHg0ODYvbWF0Y2gv/aW1hZ2UuanBn') center/cover no-repeat fixed;
+    color:white;
+    overflow:hidden;
+}
+.overlay{position:fixed;width:100%;height:100%;background:rgba(0,0,0,0.82);}
+body::after{
+    content:"";position:fixed;top:0;left:0;width:100%;height:100%;
+    background-image:linear-gradient(rgba(255,0,0,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,0,0,0.08) 1px, transparent 1px);
+    background-size:60px 60px;pointer-events:none;
+}
+#broadcastTag{position:absolute;top:20px;left:30px;background:rgba(0,0,0,0.75);
+border-left:6px solid red;padding:12px 18px;font-size:18px;letter-spacing:2px;box-shadow:0 0 20px red;}
+#clock{position:absolute;top:20px;right:40px;font-size:22px;}
+#portal{
+    position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);
+    text-align:center;
+}
+#portal input{padding:15px;font-size:20px;text-align:center;width:260px}
+#portal button{padding:15px 40px;font-size:20px;background:red;color:white;border:none;margin-top:10px;cursor:pointer}
+#startBtn{display:none;}
+#ready{position:absolute;top:30%;width:100%;text-align:center;font-size:60px;display:none;animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:0.2;}}
+#lights{position:absolute;top:42%;width:100%;text-align:center;display:none;}
+.light{height:60px;width:60px;margin:20px;display:inline-block;border-radius:50%;background:#300;}
+#result{
+    position:absolute;top:35%;left:50%;transform:translateX(-50%);
+    width:60%;padding:40px;text-align:center;font-size:38px;display:none;
+    background:rgba(0,0,0,0.65);border:2px solid red;box-shadow:0 0 40px red;
+    backdrop-filter: blur(8px);border-radius:12px;
+}
+#ticker{position:absolute;bottom:0;width:100%;background:black;color:red;font-size:20px;padding:12px;white-space:nowrap;overflow:hidden;}
+#ticker span{display:inline-block;padding-left:100%;animation:scroll 20s linear infinite;}
+@keyframes scroll{to{transform:translateX(-100%);}}
 </style>
 </head>
-<body>
 
-<div id="overlay"></div>
-<div id="topbar">MAST Model United Nations — FIA Committee</div>
+<body>
+<div class="overlay"></div>
+<div id="broadcastTag">EMACITY MODEL UNITED NATIONS • FIA COMMITTEE</div>
 <div id="clock"></div>
 
-<div id="center">
-  <h2>Enter Your FIA ID</h2>
-  <input id="fid" placeholder="FIA ID"/>
-  <br>
-  <button onclick="start()">Start Allotment</button>
+<div id="portal">
+    <h2>Enter Your FIA ID</h2>
+    <input id="fid" placeholder="FIA1024">
+    <br>
+    <button onclick="begin()">INITIATE FIA ALLOTMENT</button>
+</div>
 
-  <div>
+<div id="ready">ARE YOU READY?</div>
+
+<div id="lights">
     <div class="light" id="l1"></div>
     <div class="light" id="l2"></div>
     <div class="light" id="l3"></div>
     <div class="light" id="l4"></div>
-  </div>
-
-  <div id="result">
-    <div id="name"></div>
-    <div id="portfolio"></div>
-  </div>
 </div>
 
+<div id="result"></div>
+
+<div id="ticker">
+<span>FIA News • DRS debate • Rain probability 60% • Track limits warning • Safety car protocol revision</span>
+</div>
+
+<audio id="startSound" src="f1sound.mp3"></audio>
+<audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
+
 <script>
-function updateClock(){
-  document.getElementById('clock').innerText =
-    new Date().toLocaleTimeString();
+let delegateName="", delegatePortfolio="";
+
+async function begin(){
+    let id=document.getElementById("fid").value.trim();
+    let res=await fetch('data.json');
+    let data=await res.json();
+    if(!data[id]){ alert("Invalid FIA ID"); return; }
+
+    delegateName=data[id].name;
+    delegatePortfolio=data[id].portfolio;
+
+    document.getElementById("portal").style.display="none";
+    startShow();
 }
+
+function typeWriter(el,text,speed){
+    let i=0;
+    const t=setInterval(()=>{
+        if(i<text.length){
+            el.innerHTML+=text.charAt(i);
+            document.getElementById("typeSound").currentTime=0;
+            document.getElementById("typeSound").play();
+            i++;
+        } else clearInterval(t);
+    },speed);
+}
+
+function startShow(){
+    document.getElementById("startSound").play();
+    document.getElementById("ready").style.display="block";
+
+    setTimeout(()=>{
+        document.getElementById("ready").style.display="none";
+        document.getElementById("lights").style.display="block";
+        let lights=["l1","l2","l3","l4"];
+        let i=0;
+        let interval=setInterval(()=>{
+            let el=document.getElementById(lights[i]);
+            el.style.background="red";
+            el.style.boxShadow="0 0 40px red";
+            i++;
+            if(i==4){
+                clearInterval(interval);
+                setTimeout(()=>{
+                    document.getElementById("lights").style.display="none";
+                    showResult();
+                },800);
+            }
+        },700);
+    },2000);
+}
+
+function showResult(){
+    const res=document.getElementById("result");
+    res.style.display="block";
+    res.innerHTML="<p>Delegate: <strong id='name'></strong></p><p>Portfolio: <strong id='port'></strong></p>";
+    typeWriter(document.getElementById("name"), delegateName, 80);
+    setTimeout(()=>{ typeWriter(document.getElementById("port"), delegatePortfolio, 80); },1500);
+}
+
+function updateClock(){document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();}
 setInterval(updateClock,1000);
-
-async function start(){
-  let id=document.getElementById('fid').value.trim();
-  let res=await fetch('data.json');
-  let data=await res.json();
-
-  if(!data[id]){
-    alert("Invalid FIA ID");
-    return;
-  }
-
-  let lights=['l1','l2','l3','l4'];
-  for(let i=0;i<lights.length;i++){
-    await new Promise(r=>setTimeout(r,600));
-    document.getElementById(lights[i]).classList.add('on');
-  }
-
-  await new Promise(r=>setTimeout(r,800));
-  document.getElementById('result').style.display='block';
-  document.getElementById('name').innerText=data[id].name;
-  document.getElementById('portfolio').innerText=data[id].portfolio;
-}
 </script>
 
 </body>
