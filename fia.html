@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FIA Allotment Portal</title>
+<style>
+body{margin:0;background:#000;color:white;font-family:Arial;overflow:hidden}
+#overlay{position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(255,0,0,.08),rgba(255,0,0,.08) 2px,transparent 2px,transparent 40px);pointer-events:none}
+#topbar{position:fixed;top:20px;left:30px;letter-spacing:2px;opacity:.8}
+#clock{position:fixed;top:20px;right:30px}
+#center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+input{padding:12px;font-size:18px;width:260px;text-align:center}
+button{padding:12px 20px;font-size:18px;background:red;color:white;border:none;cursor:pointer;margin-top:10px}
+.light{display:inline-block;width:40px;height:40px;margin:10px;border-radius:50%;background:#330000}
+.on{background:red;box-shadow:0 0 20px red}
+#result{display:none;margin-top:30px}
+#name{font-size:42px;margin:10px 0}
+#portfolio{font-size:24px;opacity:.8}
+</style>
+</head>
+<body>
+
+<div id="overlay"></div>
+<div id="topbar">MAST Model United Nations — FIA Committee</div>
+<div id="clock"></div>
+
+<div id="center">
+  <h2>Enter Your FIA ID</h2>
+  <input id="fid" placeholder="FIA ID"/>
+  <br>
+  <button onclick="start()">Start Allotment</button>
+
+  <div>
+    <div class="light" id="l1"></div>
+    <div class="light" id="l2"></div>
+    <div class="light" id="l3"></div>
+    <div class="light" id="l4"></div>
+  </div>
+
+  <div id="result">
+    <div id="name"></div>
+    <div id="portfolio"></div>
+  </div>
+</div>
+
+<script>
+function updateClock(){
+  document.getElementById('clock').innerText =
+    new Date().toLocaleTimeString();
+}
+setInterval(updateClock,1000);
+
+async function start(){
+  let id=document.getElementById('fid').value.trim();
+  let res=await fetch('data.json');
+  let data=await res.json();
+
+  if(!data[id]){
+    alert("Invalid FIA ID");
+    return;
+  }
+
+  let lights=['l1','l2','l3','l4'];
+  for(let i=0;i<lights.length;i++){
+    await new Promise(r=>setTimeout(r,600));
+    document.getElementById(lights[i]).classList.add('on');
+  }
+
+  await new Promise(r=>setTimeout(r,800));
+  document.getElementById('result').style.display='block';
+  document.getElementById('name').innerText=data[id].name;
+  document.getElementById('portfolio').innerText=data[id].portfolio;
+}
+</script>
+
+</body>
+</html>
