@@ -3,183 +3,176 @@
 <head>
 <meta charset="UTF-8">
 <title>FIA Allotment</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-
 <style>
 body{
     margin:0;
-    font-family:'Orbitron',sans-serif;
-    background:#000;
+    font-family:'Orbitron', sans-serif;
+    background:url('https://imgs.search.brave.com/um80_UHagsPGcFZTUsOcvkQVb3lccVveXoqJcJUEN28/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9kMm45/aDJ3aXRzMjNoZi5j/bG91ZGZyb250Lm5l/dC9pbWFnZS92MS9z/dGF0aWMvNjA1Nzk0/OTQzMjAwMS8xMWU3/NDdhNi01NTg2LTQ2/YTQtOGEyOS1jOTQw/ODhhZDkzYjgvNzZi/NGQ2Y2MtMjkxZS00/ZmJhLWFhNWYtYTVi/NGI2YjIwMWY2Lzg2/NHg0ODYvbWF0Y2gv/aW1hZ2UuanBn') center/cover no-repeat fixed;
     color:white;
     overflow:hidden;
 }
-
+.overlay{position:fixed;width:100%;height:100%;background:rgba(0,0,0,0.82);}
+body::after{
+    content:"";position:fixed;top:0;left:0;width:100%;height:100%;
+    background-image:
+      linear-gradient(rgba(255,0,0,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,0,0,0.08) 1px, transparent 1px);
+    background-size:60px 60px;pointer-events:none;
+}
 #gate{
-    position:absolute;
-    top:0;left:0;right:0;bottom:0;
-    background:black;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    z-index:10;
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.95);
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    z-index:9999;
 }
-
-input{
-    padding:12px;
-    font-size:18px;
-    margin-bottom:10px;
-    text-align:center;
+#gate input{padding:12px;font-size:18px;border-radius:6px;border:none;text-align:center;margin-bottom:15px;}
+#gate button{padding:12px 25px;font-size:18px;background:red;border:none;border-radius:6px;color:white;cursor:pointer;}
+#broadcastTag{
+    position:absolute;top:20px;left:30px;background:rgba(0,0,0,0.75);
+    border-left:6px solid red;padding:12px 18px;font-size:18px;
+    letter-spacing:2px;font-weight:bold;color:white;box-shadow:0 0 20px red;z-index:1000;
 }
-
-button{
-    padding:12px 30px;
-    font-size:18px;
-    cursor:pointer;
+#clock{position:absolute;top:20px;right:40px;font-size:22px;font-weight:bold;}
+#startBtn{
+    position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);
+    padding:18px 60px;font-size:22px;background:red;border:none;color:white;cursor:pointer;
 }
-
-#lights{
-    display:flex;
-    gap:20px;
-    justify-content:center;
-    margin-top:40px;
+#ready{
+    position:absolute;top:30%;width:100%;text-align:center;font-size:60px;
+    display:none;animation:blink 1s infinite;
 }
-
-.light{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    background:#222;
-}
-
+@keyframes blink{50%{opacity:0.2;}}
+#lights{position:absolute;top:42%;width:100%;text-align:center;display:none;}
+.light{height:60px;width:60px;margin:20px;display:inline-block;border-radius:50%;background:#300;}
 #result{
-    text-align:center;
-    margin-top:60px;
-    font-size:26px;
-    white-space:pre-line;
-    min-height:120px;
+    position:absolute;top:35%;left:50%;transform:translateX(-50%);
+    width:60%;padding:40px;text-align:center;font-size:38px;display:none;
+    background:rgba(0,0,0,0.65);border:2px solid red;box-shadow:0 0 40px red;
+    backdrop-filter: blur(8px);border-radius:12px;z-index:1100;
 }
-
+.munHeading{
+    font-size:42px;font-weight:800;margin-bottom:50px;color:#fff;
+    letter-spacing:3px;text-transform:uppercase;text-shadow:0 0 25px rgba(255,0,0,0.9);
+}
+#delegateName,#delegatePort{
+    display:block;font-size:32px;margin-top:20px;color:#ff4d4d;letter-spacing:2px;
+}
 #ticker{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    background:#111;
-    padding:10px 0;
-    overflow:hidden;
-    white-space:nowrap;
+    position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.85);
+    color:white;font-size:20px;padding:12px 0;white-space:nowrap;overflow:hidden;border-top:2px solid red;
 }
-
 #ticker span{
-    display:inline-block;
-    padding-left:100%;
-    animation:scroll 18s linear infinite;
+    display:inline-block;padding-left:100%;animation:scroll 20s linear infinite;
 }
-
-@keyframes scroll{
-    from{transform:translateX(0)}
-    to{transform:translateX(-100%)}
-}
-
-#clock{
-    position:absolute;
-    top:15px;
-    right:20px;
-    font-size:16px;
-}
+@keyframes scroll{0%{transform:translateX(0%);}100%{transform:translateX(-100%);}}
 </style>
 </head>
 
 <body>
+<div class="overlay"></div>
 
 <div id="gate">
-    <input id="fiaId" placeholder="Enter FIA ID">
-    <button onclick="unlock()">Enter</button>
+    <h1 style="color:red;margin-bottom:25px;">Enter FIA ID</h1>
+    <input type="text" id="fiaInput" placeholder="FIA-001">
+    <button onclick="checkID()">Enter</button>
 </div>
 
+<div id="broadcastTag">EMACITY MODEL UNITED NATIONS</div>
 <div id="clock"></div>
+
+<button id="startBtn" onclick="startShow()">INITIATE FIA ALLOTMENT</button>
+
+<div id="ready">ARE YOU READY?</div>
 
 <div id="lights">
     <div class="light" id="l1"></div>
     <div class="light" id="l2"></div>
     <div class="light" id="l3"></div>
     <div class="light" id="l4"></div>
-    <div class="light" id="l5"></div>
 </div>
 
-<div style="text-align:center;margin-top:30px;">
-    <button onclick="startShow()">START</button>
+<div id="result">
+    <div class="munHeading">EMACITY MODEL UNITED NATIONS</div>
+    <span id="delegateName"></span>
+    <span id="delegatePort"></span>
 </div>
-
-<div id="result"></div>
 
 <div id="ticker">
-    <span>FIA News • DRS Enabled • Delegate Allotment System • Emacity Model United Nations • FIA Live Broadcast</span>
+<span>FIA News • DRS debate • Rain probability 60% • Track limits warning • Safety car protocol revision</span>
 </div>
 
-<audio id="startSound" src="https://www.soundjay.com/transportation/sounds/car-start-1.mp3"></audio>
+<audio id="startSound" src="f1sound.mp3"></audio>
+<audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
 
 <script>
-let currentDelegate = null;
-
 const delegates = {
-    "FIA101":"Committee: IMF\nCountry: Japan",
-    "FIA102":"Committee: UNHRC\nCountry: Brazil",
-    "FIA103":"Committee: UNSC\nCountry: France"
+  "FIA-001": { name:"Vallarry Kshipra Mangesh Deshmukh", portfolio:"George Russell" },
+  "FIA-002": { name:"Anomitra Das", portfolio:"Lewis Hamilton" },
+  "FIA-003": { name:"Adit Kulkarni", portfolio:"Toto Wolff" },
+  "FIA-004": { name:"Neil Pillai", portfolio:"Carlos Sainz" }
 };
 
-function unlock(){
-    const id = document.getElementById("fiaId").value.trim();
+let currentDelegate=null;
+
+function checkID(){
+    const id=document.getElementById("fiaInput").value.trim().toUpperCase();
     if(delegates[id]){
-        currentDelegate = delegates[id];
+        currentDelegate=delegates[id];
         document.getElementById("gate").style.display="none";
-        document.documentElement.requestFullscreen();
-    }else{
-        alert("Invalid FIA ID");
-    }
+    } else alert("Invalid FIA ID");
+}
+
+function updateClock(){
+    document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();
+}
+setInterval(updateClock,1000);
+
+function typeWriter(el,text,speed,cb){
+    let i=0;el.innerHTML="";
+    const t=setInterval(()=>{
+        if(i<text.length){
+            el.innerHTML+=text.charAt(i);
+            document.getElementById("typeSound").currentTime=0;
+            document.getElementById("typeSound").play();
+            i++;
+        } else {clearInterval(t);if(cb)cb();}
+    },speed);
 }
 
 function startShow(){
-    if(!currentDelegate){ alert("Enter FIA ID first"); return; }
-
     document.getElementById("startSound").play();
+    document.getElementById("startBtn").style.display="none";
+    document.getElementById("ready").style.display="block";
 
-    let i=1;
-    const interval = setInterval(()=>{
-        if(i<=5){
-            document.getElementById("l"+i).style.background="red";
+    setTimeout(()=>{
+        document.getElementById("ready").style.display="none";
+        document.getElementById("lights").style.display="block";
+
+        let ids=["l1","l2","l3","l4"],i=0;
+        let int=setInterval(()=>{
+            let e=document.getElementById(ids[i]);
+            e.style.background="red";
+            e.style.boxShadow="0 0 40px red";
             i++;
-        }else{
-            clearInterval(interval);
-            showResult();
-        }
-    },600);
+            if(i===4){
+                clearInterval(int);
+                setTimeout(()=>{
+                    document.getElementById("lights").style.display="none";
+                    document.getElementById("result").style.display="block";
+                    typeWriter(delegateName,"Delegate: "+currentDelegate.name,70,()=>{
+                        typeWriter(delegatePort,"Portfolio: "+currentDelegate.portfolio,70);
+                    });
+                },800);
+            }
+        },700);
+    },2000);
 }
 
-function showResult(){
-    const text = currentDelegate;
-    let i=0;
-    const out = document.getElementById("result");
-    out.innerHTML="";
-    const typer = setInterval(()=>{
-        if(i<text.length){
-            out.innerHTML += text.charAt(i);
-            i++;
-        }else{
-            clearInterval(typer);
-        }
-    },40);
-}
-
-setInterval(()=>{
-    document.getElementById("clock").innerHTML =
-        new Date().toLocaleTimeString('en-IN',{
-            hour:'2-digit',
-            minute:'2-digit',
-            second:'2-digit'
-        }) + " IST";
-},1000);
+document.addEventListener("click",function fs(){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    document.removeEventListener("click",fs);
+});
 </script>
 
 </body>
