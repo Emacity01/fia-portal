@@ -211,7 +211,7 @@ body::after{
 <div id="clock"></div>
 
 <!-- Start button -->
-<button id="startBtn" onclick="startShow()">INITIATE FIA ALLOTMENT</button>
+<button id="startBtn" onclick="startShow()" style="display:none;">INITIATE FIA ALLOTMENT</button>
 
 <!-- Ready text and lights -->
 <div id="ready">ARE YOU READY?</div>
@@ -229,7 +229,7 @@ body::after{
         <span>FIA COMMITTEE</span>
     </div>
     <p>Delegate: <strong id="name"></strong></p>
-    <p>Portfolio: <strong id="port"></strong></p>
+    <p>Role: <strong id="port"></strong></p>
 </div>
 
 <!-- News ticker -->
@@ -265,30 +265,27 @@ function checkID(){
         currentDelegate = delegates[id];
         document.getElementById("gate").style.display="none";
         document.getElementById("startBtn").style.display="block";
+        
+        // Set name
         document.getElementById("name").innerText = currentDelegate.name;
-        document.getElementById("port").innerText = currentDelegate.portfolio;
-    } else alert("Invalid FIA ID");
+        
+        // Set role (Portfolio or Position)
+        const portElement = document.getElementById("port");
+        if(currentDelegate.position){
+            portElement.innerHTML = '<strong style="color: #ff4444;">' + currentDelegate.position + ' (Executive Board)</strong>';
+        } else {
+            portElement.innerHTML = '<strong>' + currentDelegate.portfolio + '</strong>';
+        }
+    } else {
+        alert("Invalid FIA ID");
+    }
 }
 
 // === Clock ===
 function updateClock(){
-    document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();
+    document.getElementById("clock").innerHTML = new Date().toLocaleTimeString();
 }
-setInterval(updateClock,1000);
-
-// === Typing ===
-function typeWriter(element,text,speed){
-    let i=0;
-    element.innerHTML="";
-    const typing = setInterval(()=>{
-        if(i<text.length){
-            element.innerHTML+=text.charAt(i);
-            document.getElementById("typeSound").currentTime=0;
-            document.getElementById("typeSound").play();
-            i++;
-        } else clearInterval(typing);
-    },speed);
-}
+setInterval(updateClock, 1000);
 
 // === Start Show ===
 function startShow(){
@@ -330,5 +327,3 @@ document.addEventListener("click",function enterFullscreen(){
 
 </body>
 </html>
-
-
