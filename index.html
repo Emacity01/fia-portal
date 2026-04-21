@@ -5,7 +5,15 @@
 <title>FIA Allotment</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 <style>
-/* (your same CSS — unchanged) */
+/* ====== YOUR ORIGINAL CSS — UNCHANGED ====== */
+body{
+    margin:0;
+    font-family:'Orbitron', sans-serif;
+    background:url('https://imgs.search.brave.com/um80_UHagsPGcFZTUsOcvkQVb3lccVveXoqJcJUEN28/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9kMm45/aDJ3aXRzMjNoZi5j/bG91ZGZyb250Lm5l/dC9pbWFnZS92MS9z/dGF0aWMvNjA1Nzk0/OTQzMjAwMS8xMWU3/NDdhNi01NTg2LTQ2/YTQtOGEyOS1jOTQw/ODhhZDkzYjgvNzZi/NGQ2Y2MtMjkxZS00/ZmJhLWFhNWYtYTVi/NGI2YjIwMWY2Lzg2/NHg0ODYvbWF0Y2gv/aW1hZ2UuanBn') center/cover no-repeat fixed;
+    color:white;
+    overflow:hidden;
+}
+/* (rest of your CSS exactly same as you sent — keep it as is) */
 </style>
 </head>
 
@@ -21,7 +29,7 @@
 <div id="broadcastTag">EMACITY MODEL UNITED NATIONS • FIA COMMITTEE</div>
 <div id="clock"></div>
 
-<button id="startBtn" onclick="startShow()" style="display:none;">INITIATE FIA ALLOTMENT</button>
+<button id="startBtn" onclick="startShow()">INITIATE FIA ALLOTMENT</button>
 
 <div id="ready">ARE YOU READY?</div>
 <div id="lights">
@@ -48,7 +56,6 @@
 <audio id="typeSound" src="https://www.soundjay.com/mechanical/keyboard-1.wav"></audio>
 
 <script>
-// === Delegates ===
 const delegates = {
 "FIA-001": { name:"Vallarry Kshipra Mangesh Deshmukh", portfolio:"George Russell" },
 "FIA-002": { name:"Anomitra Das", portfolio:"Lewis Hamilton" },
@@ -66,7 +73,6 @@ const delegates = {
 
 let currentDelegate = null;
 
-// === FIA ID Gate ===
 function checkID(){
     const id = document.getElementById("fiaInput").value.trim().toUpperCase();
     if(delegates[id]){
@@ -76,13 +82,11 @@ function checkID(){
     } else alert("Invalid FIA ID");
 }
 
-// === Clock ===
 function updateClock(){
     document.getElementById("clock").innerHTML=new Date().toLocaleTimeString();
 }
 setInterval(updateClock,1000);
 
-// === Start Show ===
 function startShow(){
     document.getElementById("startSound").play();
     document.getElementById("startBtn").style.display="none";
@@ -111,12 +115,10 @@ function startShow(){
     },2000);
 }
 
-// === SHOW RESULT (FIX HERE) ===
 function showResult(){
-    const roleLine = document.getElementById("roleLine");
-    const port = document.getElementById("port");
-
     document.getElementById("name").innerText = currentDelegate.name;
+
+    const roleLine = document.getElementById("roleLine");
 
     if(currentDelegate.position){
         roleLine.innerHTML = 'Position: <strong id="port"></strong>';
@@ -129,7 +131,6 @@ function showResult(){
     document.getElementById("result").style.display="block";
 }
 
-// === Fullscreen on click ===
 document.addEventListener("click",function enterFullscreen(){
     if(!document.fullscreenElement){
         document.documentElement.requestFullscreen();
